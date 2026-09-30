@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HEYDUDE — A Day in the Life | Alex Taylor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --nut: #c4a484;
+      --tan: #a67c52;
+      --bark: #3d2a24;
+      --ink: #1c1411;
+      --cream: #f3ebe1;
+      --parchment: #e8dccf;
+      --denim: #5b6f86;
+      --smoke: rgba(28, 20, 17, 0.55);
+      --white: #fffaf6;
+      --accent: #8b5e3c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--ink);
+      color: var(--cream);
+      font-family: "Figtree", sans-serif;
+      overflow: hidden;
+    }
+
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(18px) scale(0.985);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+
+    .slide.is-active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: none;
+      z-index: 2;
+    }
+
+    .slide.is-active .reveal {
+      animation: rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+
+    .slide.is-active .reveal-d1 { animation-delay: 0.12s; }
+    .slide.is-active .reveal-d2 { animation-delay: 0.24s; }
+    .slide.is-active .reveal-d3 { animation-delay: 0.36s; }
+    .slide.is-active .reveal-d4 { animation-delay: 0.48s; }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(22px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @keyframes kenburns {
+      from { transform: scale(1.05); }
+      to { transform: scale(1.14); }
+    }
+
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      animation: kenburns 18s ease-in-out infinite alternate;
+    }
+
+    .bg-scrim {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg, rgba(28, 20, 17, 0.88) 0%, rgba(28, 20, 17, 0.55) 48%, rgba(28, 20, 17, 0.25) 100%),
+        radial-gradient(ellipse at 80% 20%, rgba(196, 164, 132, 0.18), transparent 50%);
+    }
+
+    .bg-scrim-heavy {
+      background:
+        linear-gradient(105deg, rgba(28, 20, 17, 0.92) 0%, rgba(28, 20, 17, 0.72) 42%, rgba(28, 20, 17, 0.35) 100%);
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      align-content: center;
+      gap: 1.1rem;
+      padding: clamp(1.5rem, 4vw, 4.5rem);
+      max-width: 980px;
+    }
+
+    .content.wide { max-width: 1180px; }
+
+    .brand-mark {
+      width: min(180px, 42vw);
+      height: auto;
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.35));
+    }
+
+    .eyebrow {
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--nut);
+    }
+
+    h1, h2 {
+      font-family: "Bricolage Grotesque", sans-serif;
+      font-weight: 800;
+      line-height: 0.98;
+      letter-spacing: -0.03em;
+    }
+
+    h1 { font-size: clamp(2.8rem, 8vw, 6.2rem); }
+    h2 { font-size: clamp(2.2rem, 5.5vw, 4.4rem); max-width: 14ch; }
+
+    .lede {
+      font-size: clamp(1.05rem, 2vw, 1.35rem);
+      line-height: 1.45;
+      color: rgba(243, 235, 225, 0.9);
+      max-width: 38ch;
+      font-weight: 500;
+    }
+
+    .callout {
+      margin-top: 0.6rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem 1.2rem;
+      align-items: baseline;
+      max-width: 46ch;
+    }
+
+    .callout strong {
+      color: var(--white);
+      font-weight: 700;
+    }
+
+    .callout span {
+      color: rgba(243, 235, 225, 0.78);
+      font-size: 0.98rem;
+      line-height: 1.4;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 0.8rem;
+      border: 1px solid rgba(243, 235, 225, 0.22);
+      background: rgba(28, 20, 17, 0.35);
+      backdrop-filter: blur(8px);
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--cream);
+    }
+
+    .chip em {
+      font-style: normal;
+      color: var(--nut);
+      font-weight: 700;
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.4rem;
+    }
+
+    .stat {
+      min-width: 120px;
+      padding: 0.75rem 0.95rem;
+      background: rgba(243, 235, 225, 0.08);
+      border-left: 3px solid var(--nut);
+    }
+
+    .stat b {
+      display: block;
+      font-family: "Bricolage Grotesque", sans-serif;
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--white);
+    }
+
+    .stat small {
+      color: rgba(243, 235, 225, 0.7);
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* Meet slide layout */
+    .split {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      height: 100%;
+      min-height: 100%;
+    }
+
+    .split-copy {
+      display: grid;
+      align-content: center;
+      gap: 1rem;
+      padding: clamp(1.5rem, 4vw, 4.5rem);
+      background:
+        linear-gradient(180deg, #2a1d18 0%, #1c1411 100%);
+    }
+
+    .split-visual {
+      position: relative;
+      overflow: hidden;
+      background: #2a1d18;
+    }
+
+    .split-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      animation: kenburns 20s ease-in-out infinite alternate;
+    }
+
+    .name-lockup {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .name-lockup .meet {
+      font-size: 0.85rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--nut);
+      font-weight: 700;
+    }
+
+    .name-lockup h2 {
+      max-width: none;
+      font-size: clamp(3rem, 7vw, 5.5rem);
+    }
+
+    .product-float {
+      position: absolute;
+      right: clamp(1rem, 4vw, 3rem);
+      bottom: clamp(1rem, 4vw, 3rem);
+      width: min(280px, 42vw);
+      animation: floaty 5s ease-in-out infinite;
+      filter: drop-shadow(0 18px 30px rgba(0,0,0,0.45));
+    }
+
+    .product-float img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .sms-card {
+      margin-top: 0.8rem;
+      max-width: 360px;
+      background: var(--white);
+      color: var(--ink);
+      padding: 1rem 1.1rem;
+      border-radius: 18px 18px 18px 4px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .sms-card .from {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--tan);
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+
+    .phone-email {
+      position: absolute;
+      z-index: 3;
+      right: clamp(1rem, 3.5vw, 3.25rem);
+      bottom: clamp(4.4rem, 9vh, 6.25rem);
+      width: min(340px, 88vw);
+      background: #f2f2f7;
+      color: #1c1411;
+      border-radius: 36px;
+      padding: 10px 10px 14px;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.35),
+        0 28px 70px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+
+    .phone-email .notch-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.15rem 0.85rem 0.45rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .phone-email .mail-chrome {
+      background: #fff;
+      border-radius: 24px;
+      overflow: hidden;
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
+    }
+
+    .phone-email .mail-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.55rem 0.75rem 0.35rem;
+      color: #0a84ff;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .phone-email .mail-title {
+      text-align: center;
+      padding: 0 0.5rem 0.55rem;
+      border-bottom: 1px solid #e5e5ea;
+    }
+
+    .phone-email .mail-title strong {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .phone-email .mail-title span {
+      font-size: 0.68rem;
+      color: #8e8e93;
+      font-weight: 600;
+    }
+
+    .phone-email .thread {
+      flex: 1;
+      padding: 0.65rem 0.7rem 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .mail-msg {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 0.55rem;
+      align-items: start;
+    }
+
+    .mail-msg .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      object-fit: cover;
+      background: #efe6dc;
+    }
+
+    .mail-msg .avatar.logo {
+      object-fit: contain;
+      padding: 3px;
+      background: #3d2a24;
+    }
+
+    .mail-msg .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.4rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .mail-msg .meta b {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .mail-msg .meta time {
+      font-size: 0.65rem;
+      color: #8e8e93;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .mail-msg .body {
+      font-size: 0.72rem;
+      line-height: 1.35;
+      color: #333;
+    }
+
+    .mail-msg .reply-cta {
+      margin-top: 0.45rem;
+      padding: 0.45rem 0.5rem;
+      border: 1.5px solid #a67c52;
+      border-radius: 8px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #3d2a24;
+      background: #faf6f1;
+    }
+
+    .mail-msg .shop-link {
+      display: inline-block;
+      margin-top: 0.35rem;
+      color: #0a84ff;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .mail-msg .sent-from {
+      margin-top: 0.25rem;
+      font-size: 0.62rem;
+      color: #8e8e93;
+    }
+
+    @media (max-width: 860px) {
+      .phone-email {
+        right: 0.65rem;
+        width: min(280px, 72vw);
+        bottom: 5.1rem;
+        border-radius: 28px;
+        padding: 8px;
+      }
+      .phone-email .mail-chrome { min-height: 340px; }
+      .phone-email .thread { gap: 0.5rem; }
+      .mail-msg .body { font-size: 0.66rem; }
+    }
+
+    .chrome {
+      position: fixed;
+      z-index: 20;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem clamp(1rem, 3vw, 2rem) 1.25rem;
+      background: linear-gradient(to top, rgba(28,20,17,0.92), transparent);
+      pointer-events: none;
+    }
+
+    .chrome > * { pointer-events: auto; }
+
+    .progress {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(243, 235, 225, 0.28);
+      border: 0;
+      cursor: pointer;
+      transition: width 0.25s ease, background 0.25s ease;
+    }
+
+    .dot.is-current {
+      width: 28px;
+      background: var(--nut);
+    }
+
+    .nav {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .nav button {
+      appearance: none;
+      border: 1px solid rgba(243, 235, 225, 0.28);
+      background: rgba(28, 20, 17, 0.55);
+      color: var(--cream);
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.65rem 1rem;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .nav button:hover {
+      background: rgba(196, 164, 132, 0.22);
+      border-color: var(--nut);
+    }
+
+    .slide-count {
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      color: rgba(243, 235, 225, 0.65);
+      font-weight: 600;
+    }
+
+    .hint {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 20;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(243, 235, 225, 0.55);
+      font-weight: 600;
+    }
+
+    .slide.has-ui-stage {
+      grid-template-columns: minmax(280px, 0.95fr) minmax(280px, 1.05fr);
+      align-items: stretch;
+    }
+
+    .slide.has-ui-stage .ui-stage {
+      position: relative;
+      inset: auto;
+      order: 2;
+    }
+
+    .slide.has-ui-stage .content {
+      position: relative;
+      z-index: 1;
+      order: 1;
+      max-width: none;
+      align-self: center;
+      background: linear-gradient(180deg, #2a1d18 0%, #1c1411 100%);
+      min-height: 100%;
+      padding-right: clamp(1.25rem, 3vw, 2.5rem);
+    }
+
+    .ui-stage {
+      display: grid;
+      place-items: center;
+      padding: clamp(1rem, 4vw, 3rem);
+      background:
+        radial-gradient(ellipse at 50% 20%, rgba(196,164,132,0.18), transparent 55%),
+        linear-gradient(160deg, #2a1d18 0%, #1c1411 100%);
+    }
+
+    .ui-stage img.ui-shot {
+      width: min(420px, 88%);
+      height: auto;
+      max-height: 78vh;
+      object-fit: contain;
+      border-radius: 28px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+      animation: floaty 6s ease-in-out infinite;
+    }
+
+    .nbos {
+      display: flex;
+      gap: 0.65rem;
+      margin-top: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .nbo {
+      width: 92px;
+      background: rgba(255,250,246,0.96);
+      color: var(--ink);
+      padding: 0.45rem;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.28);
+    }
+
+    .nbo img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+    }
+
+    .nbo span {
+      display: block;
+      margin-top: 0.3rem;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--bark);
+    }
+
+    @media (max-width: 860px) {
+      .split { grid-template-columns: 1fr; }
+      .split-visual { min-height: 42vh; order: -1; }
+      .product-float { width: min(180px, 46vw); }
+      h2 { max-width: 18ch; }
+      .hint { display: none; }
+      .nbo { width: 76px; }
+      .slide.has-ui-stage {
+        grid-template-columns: 1fr;
+      }
+      .slide.has-ui-stage .ui-stage {
+        order: -1;
+        min-height: 46vh;
+        padding-bottom: 0.5rem;
+      }
+      .slide.has-ui-stage .content {
+        min-height: auto;
+        padding-bottom: 5.5rem;
+      }
+      .slide.has-ui-stage .ui-stage img.ui-shot {
+        max-height: 42vh;
+        animation: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="hint">Arrow keys · click next</div>
+
+  <main class="deck" id="deck" aria-live="polite">
+
+    <!-- 1 Title -->
+    <section class="slide is-active" data-slide="0" aria-label="Title">
+      <div class="bg" style="background-image:url('assets/lifestyle-wally.jpg')"></div>
+      <div class="bg-scrim"></div>
+      <div class="content">
+        <img class="brand-mark reveal" src="assets/heydude-logo.png" alt="HEYDUDE" />
+        <p class="eyebrow reveal reveal-d1">A Day in the Life · MCE+</p>
+        <h1 class="reveal reveal-d2">Comfort that finds you.</h1>
+        <p class="lede reveal reveal-d3">Follow Alex Taylor through a personalized HEYDUDE journey — from affinity-based re-engagement to a smart gift upsell.</p>
+      </div>
+    </section>
+
+    <!-- 2 Meet Alex -->
+    <section class="slide" data-slide="1" aria-label="Meet Alex">
+      <div class="split">
+        <div class="split-copy">
+          <div class="name-lockup reveal">
+            <span class="meet">Meet</span>
+            <h2>Alex Taylor</h2>
+          </div>
+          <p class="lede reveal reveal-d1">Denver dad and high-frequency HEYDUDE buyer. His staple is the Wally Canvas Loafer in Nut — and he’s been browsing men’s casual sandals again this week.</p>
+          <div class="stats reveal reveal-d2">
+            <div class="stat"><b>$320</b><small>Lifetime value</small></div>
+            <div class="stat"><b>85%</b><small>Gifting likelihood</small></div>
+            <div class="stat"><b>High</b><small>Sandal propensity</small></div>
+          </div>
+          <p class="chip reveal reveal-d3"><em>HEYDUDE Data Space</em> · brand engagement isolated, insights unified at parent</p>
+        </div>
+        <div class="split-visual">
+          <img src="assets/alex-taylor-persona.png" alt="Alex Taylor, male HEYDUDE customer persona" />
+          <div class="product-float reveal reveal-d4">
+            <img src="assets/wally-nut-catalog.png" alt="Wally Canvas Loafer in Nut" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 Knows Alex -->
+    <section class="slide" data-slide="2" aria-label="HEYDUDE Knows Alex">
+      <div class="bg" style="background-image:url('assets/alex-tiktok-ad.png'); background-position: center;"></div>
+      <div class="bg-scrim bg-scrim-heavy"></div>
+      <div class="content wide">
+        <p class="eyebrow reveal">HEYDUDE knows Alex</p>
+        <h2 class="reveal reveal-d1">A TikTok ad meets his recent browse.</h2>
+        <p class="lede reveal reveal-d2">Rather than broad targeting, HEYDUDE reaches shoppers with proven affinity — Alex already viewed Finn Flip and lives in Wally Nut.</p>
+        <div class="callout reveal reveal-d3">
+          <strong>Why Alex?</strong>
+          <span>Prior PDP views + high sandal propensity beat spray-and-pray audience buys.</span>
+        </div>
+        <p class="chip reveal reveal-d4"><em>Data 360</em> · unified profile powers paid media targeting</p>
+      </div>
+    </section>
+
+    <!-- 4 Curated Picks -->
+    <section class="slide" data-slide="3" aria-label="Curated Picks">
+      <div class="bg" style="background-image:url('assets/alex-curated-picks-phone.png'); background-position: center;"></div>
+      <div class="bg-scrim bg-scrim-heavy"></div>
+      <div class="content">
+        <p class="eyebrow reveal">Curated picks</p>
+        <h2 class="reveal reveal-d1">One tap lands him on men’s — not a generic homepage.</h2>
+        <p class="lede reveal reveal-d2">The ad deep-links Alex into HEYDUDE men’s product pages shaped by his Wally affinity and sandal browse history.</p>
+        <div class="callout reveal reveal-d3">
+          <strong>Every interaction</strong>
+          <span>sharpens personalized product and style recommendations in the HEYDUDE Data Space.</span>
+        </div>
+        <p class="chip reveal reveal-d4"><em>Data 360</em> · interests &amp; affinities drive personalization</p>
+      </div>
+    </section>
+
+    <!-- 5 Ready to Buy -->
+    <section class="slide has-ui-stage" data-slide="4" aria-label="Ready to Buy">
+      <div class="ui-stage" aria-hidden="true">
+        <img class="ui-shot reveal" src="assets/alex-heydude-cart.png" alt="HEYDUDE mobile cart with Finn Flip sandal" />
+      </div>
+      <div class="content">
+        <p class="eyebrow reveal reveal-d1">Ready to buy</p>
+        <h2 class="reveal reveal-d2">Finn Flip feels right — into the cart.</h2>
+        <p class="lede reveal reveal-d3">The sandal he’s been eyeing is perfect for warmer weekends. Alex adds Finn Flip on heydude.com, ready to check out.</p>
+        <div class="callout reveal reveal-d4">
+          <strong>Why it matters</strong>
+          <span>Cart activity confirms strong purchase intent on a high-affinity men’s style.</span>
+        </div>
+        <p class="chip reveal reveal-d4"><em>Data 360</em> · high purchase intent stored on the profile</p>
+      </div>
+    </section>
+
+    <!-- 6 Life Happens -->
+    <section class="slide" data-slide="5" aria-label="Life Happens">
+      <div class="bg" style="background-image:url('assets/alex-soccer-rush.png'); background-position: center;"></div>
+      <div class="bg-scrim bg-scrim-heavy"></div>
+      <div class="content">
+        <p class="eyebrow reveal">Life happens</p>
+        <h2 class="reveal reveal-d1">Soccer pickup pulls Alex out the door.</h2>
+        <p class="lede reveal reveal-d2">Keys in hand, cart still open. Finn Flip sits unfinished — intent is hot, the moment isn’t gone.</p>
+        <div class="callout reveal reveal-d3">
+          <strong>Why it matters</strong>
+          <span>Cart abandonment becomes a revenue-recovery opportunity, not a dead end.</span>
+        </div>
+        <p class="chip reveal reveal-d4"><em>Data 360</em> · high-intent abandonment triggers a recovery journey</p>
+      </div>
+    </section>
+
+    <!-- 7 Timely Reminder -->
+    <section class="slide" data-slide="6" aria-label="Timely Reminder">
+      <div class="bg" style="background-image:url('assets/alex-dinner-sms.png'); background-position: center;"></div>
+      <div class="bg-scrim bg-scrim-heavy"></div>
+      <div class="content">
+        <p class="eyebrow reveal">Timely reminder</p>
+        <h2 class="reveal reveal-d1">Dinner’s on — and SMS brings Finn Flip back.</h2>
+        <div class="sms-card reveal reveal-d2">
+          <div class="from">HEYDUDE</div>
+          Still thinking about those Finn Flips? Your cart’s ready — easy checkout when you are.
+        </div>
+        <div class="callout reveal reveal-d3">
+          <strong>Why SMS?</strong>
+          <span>Alex’s LTV and purchase intent justify a premium recovery channel.</span>
+        </div>
+        <p class="chip reveal reveal-d4"><em>Marketing Cloud</em> · journey decisioning picks channel &amp; offer</p>
+      </div>
+    </section>
+
+    <!-- 8 Growing Value -->
+    <section class="slide" data-slide="7" aria-label="Growing Value">
+      <div class="bg" style="background-image:url('assets/alex-checkout-phone.png'); background-position: 70% center;"></div>
+      <div class="bg-scrim bg-scrim-heavy"></div>
+      <div class="content wide">
+        <p class="eyebrow reveal">Growing value</p>
+        <h2 class="reveal reveal-d1">He completes Finn Flip — and next-best offers a gift.</h2>
+        <p class="lede reveal reveal-d2">At checkout, personalization surfaces kids’ Wendys for the team — powered by Alex’s 85% gifting likelihood.</p>
+        <div class="nbos reveal reveal-d3" aria-label="Next best offer Wendy variations">
+          <div class="nbo"><img src="assets/wendy-kids-1.png" alt="Wendy kids shoe pink" /><span>Wendy · Blush</span></div>
+          <div class="nbo"><img src="assets/wendy-kids-2.png" alt="Wendy kids shoe blue" /><span>Wendy · Sky</span></div>
+          <div class="nbo"><img src="assets/wendy-kids-3.png" alt="Wendy kids shoe nut" /><span>Wendy · Nut</span></div>
+        </div>
+        <div class="callout reveal reveal-d4">
+          <strong>Why the gift?</strong>
+          <span>Self-buy first, then a timely household upsell from profile signals.</span>
+        </div>
+        <p class="chip reveal reveal-d4"><em>Personalization</em> · next-best product in real time</p>
+      </div>
+    </section>
+
+    <!-- 9 Beyond the Email -->
+    <section class="slide" data-slide="8" aria-label="Beyond the Email">
+      <div class="bg" style="background-image:url('assets/alex-kids-shoes-on.png'); background-position: center;"></div>
+      <div class="bg-scrim bg-scrim-heavy"></div>
+      <div class="phone-email reveal reveal-d2" aria-label="Two-way email conversation">
+        <div class="notch-bar"><span>10:36</span><span>●●●● ▮</span></div>
+        <div class="mail-chrome">
+          <div class="mail-nav"><span>‹ Inbox</span><span>✎</span></div>
+          <div class="mail-title">
+            <strong>Care for Your New Wendys</strong>
+            <span>3 Messages</span>
+          </div>
+          <div class="thread">
+            <article class="mail-msg">
+              <img class="avatar logo" src="assets/heydude-logo.png" alt="" />
+              <div>
+                <div class="meta"><b>HEYDUDE</b><time>9:41 AM</time></div>
+                <div class="body">Thanks for your order, Alex. A few quick tips to keep those kids’ Wendys comfy for the whole season.</div>
+                <div class="reply-cta">Any questions? Just hit reply and we’ll get back to you. 👋</div>
+              </div>
+            </article>
+            <article class="mail-msg">
+              <img class="avatar" src="assets/alex-taylor-persona.png" alt="" />
+              <div>
+                <div class="meta"><b>Alex Taylor</b><time>10:34 AM</time></div>
+                <div class="body">Hi! The left shoe feels a little tight — should we size up? Also any easy add-ons while we’re at it?</div>
+                <div class="sent-from">Sent from my iPhone</div>
+              </div>
+            </article>
+            <article class="mail-msg">
+              <img class="avatar logo" src="assets/heydude-logo.png" alt="" />
+              <div>
+                <div class="meta"><b>HEYDUDE</b><time>10:36 AM</time></div>
+                <div class="body">Hi Alex! Yes — free exchange to the next size. And based on your Wally Nut affinity, here are top picks for your rotation.</div>
+                <a class="shop-link" href="#">Shop Wally Nut for You →</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+      <div class="content">
+        <p class="eyebrow reveal">Beyond the email</p>
+        <h2 class="reveal reveal-d1">Post-purchase care becomes a two-way conversation.</h2>
+        <p class="lede reveal reveal-d3">What starts as a care-tip email becomes a reply thread — kids’ fit help plus a personalized Wally Nut recommendation.</p>
+        <div class="callout reveal reveal-d4">
+          <strong>Why two-way messaging?</strong>
+          <span>Conversational engagement drives growth and loyalty.</span>
+        </div>
+        <p class="chip reveal reveal-d4"><em>Agentforce</em> · specialized agents answer questions &amp; recommend products</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="chrome">
+    <div class="progress" id="progress" aria-label="Slide progress"></div>
+    <div class="slide-count" id="count">1 / 9</div>
+    <div class="nav">
+      <button type="button" id="prev" aria-label="Previous slide">Back</button>
+      <button type="button" id="next" aria-label="Next slide">Next</button>
+    </div>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const progress = document.getElementById("progress");
+    const count = document.getElementById("count");
+    const prevBtn = document.getElementById("prev");
+    const nextBtn = document.getElementById("next");
+    let index = 0;
+
+    slides.forEach((_, i) => {
+      const dot = document.createElement("button");
+      dot.className = "dot" + (i === 0 ? " is-current" : "");
+      dot.type = "button";
+      dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
+      dot.addEventListener("click", () => go(i));
+      progress.appendChild(dot);
+    });
+
+    function go(n) {
+      index = (n + slides.length) % slides.length;
+      slides.forEach((s, i) => s.classList.toggle("is-active", i === index));
+      [...progress.children].forEach((d, i) => d.classList.toggle("is-current", i === index));
+      count.textContent = `${index + 1} / ${slides.length}`;
+    }
+
+    prevBtn.addEventListener("click", () => go(index - 1));
+    nextBtn.addEventListener("click", () => go(index + 1));
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") {
+        e.preventDefault();
+        go(index + 1);
+      } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+        e.preventDefault();
+        go(index - 1);
+      } else if (e.key === "Home") {
+        go(0);
+      } else if (e.key === "End") {
+        go(slides.length - 1);
+      }
+    });
+
+    let touchX = null;
+    window.addEventListener("touchstart", (e) => { touchX = e.changedTouches[0].screenX; }, { passive: true });
+    window.addEventListener("touchend", (e) => {
+      if (touchX == null) return;
+      const dx = e.changedTouches[0].screenX - touchX;
+      if (Math.abs(dx) > 50) go(index + (dx < 0 ? 1 : -1));
+      touchX = null;
+    }, { passive: true });
+  </script>
+</body>
+</html>
